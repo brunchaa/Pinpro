@@ -21,27 +21,27 @@ namespace SkladisteRobe.Controllers
             _passwordHasher = new PasswordHasher<Korisnik>();
         }
 
-        // GET: /Account/Register
+        // gettaj account registraciju
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: /Account/Register
+        // postaj account registraciju
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(Korisnik model)
         {
             if (ModelState.IsValid)
             {
-                // Check if the username already exists (case-insensitive)
+                // vidi jel postoji taj username vec
                 if (_context.Korisnici.Any(k => k.Username.ToLower() == model.Username.ToLower()))
                 {
                     ModelState.AddModelError("Username", "Korisničko ime je već zauzeto.");
                     return View(model);
                 }
 
-                // Hash the password
+                //hashiraj sifru
                 model.Password = _passwordHasher.HashPassword(model, model.Password);
                 _context.Korisnici.Add(model);
                 await _context.SaveChangesAsync();
@@ -50,13 +50,13 @@ namespace SkladisteRobe.Controllers
             return View(model);
         }
 
-        // GET: /Account/Login
+        // gettaj account login
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Account/Login
+        // postaj account login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string username, string password)
@@ -67,7 +67,7 @@ namespace SkladisteRobe.Controllers
                 var result = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
                 if (result == PasswordVerificationResult.Success)
                 {
-                    // Create claims including a FullName claim.
+                    // kreira claimove i puno ime claim takoder
                     var claims = new[]
                     {
                         new Claim(ClaimTypes.Name, user.Username),
@@ -79,7 +79,7 @@ namespace SkladisteRobe.Controllers
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var principal = new ClaimsPrincipal(identity);
 
-                    // Set authentication properties with IsPersistent = false (session-only cookie)
+                    // session only cookie
                     var authProperties = new AuthenticationProperties
                     {
                         IsPersistent = false,
@@ -94,7 +94,7 @@ namespace SkladisteRobe.Controllers
             return View();
         }
 
-        // GET: /Account/Logout
+        // gettaj account logout
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

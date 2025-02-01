@@ -15,7 +15,7 @@ namespace SkladisteRobe.Models
         public string Password { get; set; }
 
         [Required(ErrorMessage = "Obavezno ime")]
-        // Regular expression: Must contain at least one letter and no digits.
+        // ime ne smije sadrzavati brojeve umalo promaklo
         [RegularExpression(@"^(?!.*\d).+$", ErrorMessage = "Ime ne smije sadržavati brojeve.")]
         public string Ime { get; set; }
 

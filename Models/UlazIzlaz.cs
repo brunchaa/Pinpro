@@ -19,7 +19,7 @@ namespace SkladisteRobe.Models
         public DateTime Datum { get; set; }
 
         [Required]
-        public string Tip { get; set; } // "Ulaz" ili "Izlaz"
+        public string Tip { get; set; } // ulaz ili izlaz
 
         [Required]
         public int KorisnikId { get; set; }

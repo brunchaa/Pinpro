@@ -22,7 +22,7 @@ namespace SkladisteRobe.Controllers
             _pdfService = new PdfService();
         }
 
-        // GET: /Skladiste/Index – Material overview
+        // gettaj skladiste index
         public IActionResult Index(string searchString)
         {
             var materijali = _context.Materijali.AsQueryable();
@@ -33,14 +33,13 @@ namespace SkladisteRobe.Controllers
             return View(materijali.ToList());
         }
 
-        // GET: /Skladiste/RadniNalog – Display the bulk transaction (Radni nalog) form.
+        // gettaj  skladiste/radni nalog prikazi bulk transakciju
         public IActionResult RadniNalog()
         {
             return View();
         }
 
-        // POST: /Skladiste/RadniNalog – Process the bulk transaction form submission.
-        // The submitType parameter must be either "Primka" (receipt) or "Izdaj robu" (issuance).
+        // postaj skladiste/radni nalog procesiraj bulk transakciju
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RadniNalog(BulkTransactionViewModel model, string submitType)
@@ -48,7 +47,7 @@ namespace SkladisteRobe.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Check for duplicate names in the input list (case-insensitive).
+            //provjeri za duplikate imena
             var duplicateNames = model.Items.GroupBy(x => x.Naziv.ToLower())
                                               .Where(g => g.Count() > 1)
                                               .Select(g => g.Key)
@@ -59,19 +58,19 @@ namespace SkladisteRobe.Controllers
                 return View(model);
             }
 
-            // Retrieve the logged-in user's ID and full name.
+            // uzmi ulogiranom useru id i puno ime
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             int userId = 0;
             if (userIdClaim != null)
                 int.TryParse(userIdClaim.Value, out userId);
             var fullName = User.FindFirst("FullName")?.Value ?? "Nepoznati korisnik";
 
-            // Process each bulk transaction item.
+            // procesuiraj svaki bulk item
             foreach (var item in model.Items)
             {
                 if (submitType == "Primka")
                 {
-                    // For receipt ("Primka"): if a material with the same name and unit exists, add quantity; otherwise, create a new material.
+                    // ako vec postoji dodaj mu ako ne onda napravi novi
                     var existingMat = _context.Materijali
                         .FirstOrDefault(m => m.Naziv.ToLower() == item.Naziv.ToLower() && m.Jedinica == item.Jedinica);
                     if (existingMat != null)
@@ -95,7 +94,7 @@ namespace SkladisteRobe.Controllers
                             Jedinica = item.Jedinica
                         };
                         _context.Materijali.Add(newMat);
-                        _context.SaveChanges(); // Ensure newMat.Id is generated.
+                        _context.SaveChanges(); // potvrdi da se newmaterijal napravi
                         _context.Transakcije.Add(new Transakcija
                         {
                             MaterijalId = newMat.Id,
@@ -108,7 +107,7 @@ namespace SkladisteRobe.Controllers
                 }
                 else if (submitType == "Izdaj robu")
                 {
-                    // For issuance ("Izdaj robu"): material must exist (with the same unit) and have sufficient quantity.
+                    // uvjeti za postojanje
                     var existingMat = _context.Materijali
                         .FirstOrDefault(m => m.Naziv.ToLower() == item.Naziv.ToLower() && m.Jedinica == item.Jedinica);
                     if (existingMat == null)
@@ -140,16 +139,16 @@ namespace SkladisteRobe.Controllers
 
             _context.SaveChanges();
 
-            // Generate a bulk transaction (Radni nalog) PDF report.
+            // kreiraj bulk transakciju u pdfu za radni nalog
             var pdfBytes = _pdfService.GenerateBulkTransactionPdf(model, submitType, fullName);
             string fileName = submitType == "Primka" ? "Primka.pdf" : "IzdajRobu.pdf";
             return File(pdfBytes, "application/pdf", fileName);
         }
 
-        // GET: /Skladiste/Transakcije – Display a list of past transactions.
+        // gettaj skladiste/transakcije ispisuje listu proslih transakcija
         public IActionResult Transakcije()
         {
-            // Include the related Korisnik entity to display full name.
+            // ispisi puna imena
             var transakcije = _context.Transakcije
                 .Include(t => t.Korisnik)
                 .OrderByDescending(t => t.Datum)
@@ -157,7 +156,7 @@ namespace SkladisteRobe.Controllers
             return View(transakcije);
         }
 
-        // GET: /Skladiste/GenerateTransakcijePdf – Generate a detailed PDF report for all past transactions.
+        // gettaj skladiste/generatetransakcijepdf – generiraj pdf sa svim proslim transakcijama
         public IActionResult GenerateTransakcijePdf()
         {
             var transakcije = _context.Transakcije
@@ -168,7 +167,7 @@ namespace SkladisteRobe.Controllers
             return File(pdfBytes, "application/pdf", "Transakcije.pdf");
         }
 
-        // GET: /Skladiste/GeneratePdf/{id} – Generate a PDF for a specific transaction.
+        // gettaj skladiste/generatepdf/{id} generiraj pdf za specificnu transakciju
         public IActionResult GeneratePdf(int id)
         {
             var transakcija = _context.Transakcije
@@ -181,7 +180,7 @@ namespace SkladisteRobe.Controllers
             return File(pdfBytes, "application/pdf", $"Transakcija_{transakcija.Id}.pdf");
         }
 
-        // GET: /Skladiste/GenerateAllPdf – Generate a PDF report for all materials.
+        // gettaj skladiste/generateallpdf generiraj izvjesće za sve materijale
         public IActionResult GenerateAllPdf()
         {
             var materijali = _context.Materijali.ToList();

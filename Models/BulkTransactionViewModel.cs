@@ -6,9 +6,8 @@ namespace SkladisteRobe.Models
     public class BulkTransactionItemViewModel
     {
         [Required(ErrorMessage = "Naziv je obavezan")]
-        // This regex ensures the name contains at least one letter.
-        [RegularExpression(@"^(?=.*\p{L})[\p{L}\p{N}\s,.\-]+$",
-            ErrorMessage = "Naziv mora sadržavati barem jedno slovo i može sadržavati samo slova, brojeve, razmake, zareze, točke i crtice.")]
+        // String mora sadrzavati barem jedno slovo ne moze drugacije zbog imena stvari
+        [RegularExpression(@"^(?=.*\p{L}).+$", ErrorMessage = "Naziv mora sadržavati barem jedno slovo.")]
         public string Naziv { get; set; }
 
         [Required(ErrorMessage = "Količina je obavezna")]

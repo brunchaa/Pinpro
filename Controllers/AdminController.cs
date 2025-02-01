@@ -15,7 +15,7 @@ namespace SkladisteRobe.Controllers
             _context = context;
         }
 
-        // GET: /Admin/Index - Lists all users.
+        // getaj adminov index i prikazi sve usere
         public IActionResult Index()
         {
             var users = _context.Korisnici.ToList();

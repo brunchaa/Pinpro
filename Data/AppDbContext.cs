@@ -17,7 +17,7 @@ namespace SkladisteRobe.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // Example conversions for enums (if needed)
+            
             modelBuilder.Entity<Korisnik>()
                         .Property(k => k.Role)
                         .HasConversion<string>();

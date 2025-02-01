@@ -10,7 +10,7 @@ namespace SkladisteRobe.Models
         [Required]
         public int MaterijalId { get; set; }
 
-        // Navigation property to Materijal
+        // navigiraj property u materijal
         public Materijal Materijal { get; set; }
 
         [Required(ErrorMessage = "Obavezna količina")]
@@ -19,14 +19,14 @@ namespace SkladisteRobe.Models
         [Required]
         public DateTime Datum { get; set; }
 
-        // Should contain values such as "Ulaz" (receipt) or "Izlaz" (issuance)
+        
         [Required]
         public string Tip { get; set; }
 
         [Required]
         public int KorisnikId { get; set; }
 
-        // Navigation property to Korisnik (the user who performed the transaction)
+        // navigira property u korisnika
         public Korisnik Korisnik { get; set; }
     }
 }

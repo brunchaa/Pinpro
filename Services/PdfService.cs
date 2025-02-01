@@ -9,11 +9,11 @@ namespace SkladisteRobe.Services
 {
     public class PdfService
     {
-        // Path to your Unicode font file that supports Croatian characters.
-        // If the file extension is .ttf instead of .ttff, update the constant accordingly.
+        
+        // font za pdf i njegov path
         private const string UnicodeFontPath = @"C:\Font\l_10646.ttf";
 
-        // Generates a PDF report for a single transaction.
+        // generiraj pdf za jednu transakciju
         public byte[] GeneratePdfReport(Transakcija transakcija, Materijal materijal)
         {
             if (transakcija == null)
@@ -21,7 +21,7 @@ namespace SkladisteRobe.Services
             if (materijal == null)
                 throw new ArgumentNullException(nameof(materijal));
 
-            // Create a BaseFont with Identity-H encoding to support Unicode.
+            // kreiram basefont with identity-h enkodiranje da mi prepozna unicode zbog čćšž
             BaseFont baseFont = BaseFont.CreateFont(UnicodeFontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             Font titleFont = new Font(baseFont, 18, Font.BOLD);
             Font normalFont = new Font(baseFont, 12, Font.NORMAL);
@@ -34,9 +34,8 @@ namespace SkladisteRobe.Services
 
                 string naslov = transakcija.Tip == "Ulaz" ? "Radni nalog za unos robe" : "Radni nalog za otpremu robe";
                 doc.Add(new Paragraph(naslov, titleFont));
-                doc.Add(new Paragraph(" ", normalFont)); // Blank line
+                doc.Add(new Paragraph(" ", normalFont)); // prazna linija
                 doc.Add(new Paragraph($"Naziv materijala: {materijal.Naziv}", normalFont));
-                // Using a Unicode escape for č if needed:
                 doc.Add(new Paragraph($"Koli\u010Dina operacije: {transakcija.Kolicina}", normalFont));
                 doc.Add(new Paragraph($"Tip operacije: {transakcija.Tip}", normalFont));
                 doc.Add(new Paragraph($"Datum i vrijeme: {transakcija.Datum:dd.MM.yyyy HH:mm:ss}", normalFont));
@@ -45,7 +44,7 @@ namespace SkladisteRobe.Services
             }
         }
 
-        // Generates a PDF report for all materials.
+        // generiraj pdf za sve materijale
         public byte[] GenerateAllMaterialsPdf(List<Materijal> materijali)
         {
             BaseFont baseFont = BaseFont.CreateFont(UnicodeFontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
@@ -81,7 +80,7 @@ namespace SkladisteRobe.Services
             }
         }
 
-        // Generates a detailed PDF report for all past transactions.
+        // generiraj detaljan pdf izvjestaj za sve prosle transakcije
         public byte[] GenerateTransakcijePdf(List<Transakcija> transakcije)
         {
             BaseFont baseFont = BaseFont.CreateFont(UnicodeFontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
@@ -120,7 +119,7 @@ namespace SkladisteRobe.Services
             }
         }
 
-        // Generates a bulk transaction (Radni nalog) PDF report.
+        // generiraj bulk transakciju pdf report od radnog naloga
         public byte[] GenerateBulkTransactionPdf(BulkTransactionViewModel model, string transactionType, string employeeName)
         {
             BaseFont baseFont = BaseFont.CreateFont(UnicodeFontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
