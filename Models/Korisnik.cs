@@ -1,0 +1,26 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SkladisteRobe.Models
+{
+    public class Korisnik
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Obavezno korisničko ime")]
+        public string Username { get; set; }
+
+        [Required(ErrorMessage = "Obavezna lozinka")]
+        [DataType(DataType.Password)]
+        [MinLength(8, ErrorMessage = "Lozinka mora imati najmanje 8 znakova")]
+        public string Password { get; set; }
+
+        [Required(ErrorMessage = "Obavezno ime")]
+        public string Ime { get; set; }
+
+        [Required(ErrorMessage = "Obavezno prezime")]
+        public string Prezime { get; set; }
+
+        [Required(ErrorMessage = "Obavezna uloga")]
+        public Uloga Role { get; set; }
+    }
+}
