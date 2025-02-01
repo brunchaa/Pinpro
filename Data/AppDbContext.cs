@@ -13,13 +13,17 @@ namespace SkladisteRobe.Data
         public DbSet<Korisnik> Korisnici { get; set; }
         public DbSet<Materijal> Materijali { get; set; }
         public DbSet<Transakcija> Transakcije { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // Convert the enum 'Role' to string so that it is stored as NVARCHAR in the database.
+            // Example conversions for enums (if needed)
             modelBuilder.Entity<Korisnik>()
                         .Property(k => k.Role)
+                        .HasConversion<string>();
+
+            modelBuilder.Entity<Materijal>()
+                        .Property(m => m.Jedinica)
                         .HasConversion<string>();
         }
     }

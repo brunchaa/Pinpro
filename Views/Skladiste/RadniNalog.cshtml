@@ -7,23 +7,30 @@
 
 <h2>Radni nalog</h2>
 
-@* Display any validation errors *@
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-@* The form posts to the RadniNalog action in the Skladiste controller *@
 <form asp-controller="Skladiste" asp-action="RadniNalog" method="post">
     <div id="itemsContainer">
         <div class="bulk-item mb-3">
             <label class="form-label">Naziv materijala</label>
             <input type="text" name="Items[0].Naziv" class="form-control" required />
+
             <label class="form-label">Količina</label>
             <input type="number" name="Items[0].Kolicina" class="form-control" required min="1" />
+
+            <label class="form-label">Mjerna jedinica</label>
+            <select name="Items[0].Jedinica" class="form-control" required>
+                <option value="">Odaberi jedinicu...</option>
+                <option value="KOMAD">KOMAD</option>
+                <option value="METAR">METAR</option>
+            </select>
         </div>
     </div>
 
     <button type="button" id="addItemBtn" class="btn btn-secondary mb-3">Dodaj još stavku</button>
     <br />
-    <!-- Two submit buttons: one for "Primka" and one for "Izdaj robu" -->
+
+    <!-- Two submit buttons: one for Primka and one for Izdaj robu -->
     <button type="submit" name="submitType" value="Primka" class="btn btn-custom me-2">Primka</button>
     <button type="submit" name="submitType" value="Izdaj robu" class="btn btn-custom">Izdaj robu</button>
 </form>
@@ -40,6 +47,12 @@
                         <input type="text" name="Items[${itemIndex}].Naziv" class="form-control" required />
                         <label class="form-label">Količina</label>
                         <input type="number" name="Items[${itemIndex}].Kolicina" class="form-control" required min="1" />
+                        <label class="form-label">Mjerna jedinica</label>
+                        <select name="Items[${itemIndex}].Jedinica" class="form-control" required>
+                            <option value="">Odaberi jedinicu...</option>
+                            <option value="KOMAD">KOMAD</option>
+                            <option value="METAR">METAR</option>
+                        </select>
                     `;
             container.appendChild(div);
             itemIndex++;

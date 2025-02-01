@@ -13,7 +13,6 @@ namespace SkladisteRobe.Controllers
     public class AccountController : Controller
     {
         private readonly AppDbContext _context;
-        // Use the default constructor of PasswordHasher<T> (no parameters)
         private readonly PasswordHasher<Korisnik> _passwordHasher;
 
         public AccountController(AppDbContext context)
@@ -35,12 +34,13 @@ namespace SkladisteRobe.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Check if username exists (case-insensitive)
+                // Check if the username already exists (case-insensitive)
                 if (_context.Korisnici.Any(k => k.Username.ToLower() == model.Username.ToLower()))
                 {
                     ModelState.AddModelError("Username", "Korisničko ime je već zauzeto.");
                     return View(model);
                 }
+
                 // Hash the password
                 model.Password = _passwordHasher.HashPassword(model, model.Password);
                 _context.Korisnici.Add(model);
@@ -67,7 +67,7 @@ namespace SkladisteRobe.Controllers
                 var result = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
                 if (result == PasswordVerificationResult.Success)
                 {
-                    // Create claims including FullName (concatenation of Ime and Prezime)
+                    // Create claims including a FullName claim.
                     var claims = new[]
                     {
                         new Claim(ClaimTypes.Name, user.Username),
@@ -78,7 +78,15 @@ namespace SkladisteRobe.Controllers
 
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var principal = new ClaimsPrincipal(identity);
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                    // Set authentication properties with IsPersistent = false (session-only cookie)
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = false,
+                        ExpiresUtc = System.DateTimeOffset.UtcNow.AddMinutes(30)
+                    };
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
                     return RedirectToAction("Index", "Home");
                 }
             }

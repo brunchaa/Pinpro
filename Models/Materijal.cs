@@ -2,6 +2,12 @@
 
 namespace SkladisteRobe.Models
 {
+    public enum MjernaJedinica
+    {
+        KOMAD,
+        METAR
+    }
+
     public class Materijal
     {
         public int Id { get; set; }
@@ -11,5 +17,8 @@ namespace SkladisteRobe.Models
 
         [Required(ErrorMessage = "Obavezna količina")]
         public int Kolicina { get; set; }
+
+        [Required(ErrorMessage = "Obavezna mjerna jedinica")]
+        public MjernaJedinica Jedinica { get; set; }
     }
 }
